@@ -95,6 +95,7 @@ public class CityPlacementManager : PlacementManager
 
         _currentMap = GetCurrentMap(_selectedObject.Transform.position);
         _currentMap.ClearMap(_selectedObject);
+        Unplace(_selectedObject);
         DestroyImmediate(_selectedObject.gameObject);
         _selectedObject = null;
         SetVisiblePlacementButtons(_selectedObject != null);

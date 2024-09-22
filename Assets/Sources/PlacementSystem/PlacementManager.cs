@@ -23,6 +23,7 @@ namespace PlacementSystem
             _currentMap = GetCurrentMap(placementObject.Transform.position);
 
             _currentMap.ClearMap(placementObject);
+            UpdateMapOverlap(placementObject);
             _selectedObject.SetObjectState(_currentMap.IsPlacable(_selectedObject, _selectedObject.Transform.position) ? Object_State.Placable : Object_State.Unplacable);
         }
 
@@ -57,13 +58,22 @@ namespace PlacementSystem
                 return;
             }
             placementObject.Transform.position = map.GetObjectPosition(placementObject, worldPosition);
-            UpdateMap(placementObject);
+            map.UpdateMap(placementObject);
 
             placementObject.SetObjectState(Object_State.None);
             placementObject.SetObjectArea(map.GetObjectArea(placementObject));
 
             if (!_objects.Exists(x=>ReferenceEquals(x, placementObject)))
                 _objects.Add(placementObject);
+        }
+
+        public virtual void Unplace(PlacementObject placementObject)
+        {
+            int index = _objects.FindIndex(x=>ReferenceEquals(x,placementObject));
+            if(index >= 0)
+            {
+                _objects.RemoveAt(index);
+            }
         }
 
         public bool IsPlacable(PlacementObject placementObject, Vector3 worldPosition)
@@ -89,13 +99,14 @@ namespace PlacementSystem
 
             _currentMap = GetCurrentMap(placementObject.Transform.position);
             _currentMap?.ClearMap(placementObject);
+            UpdateMapOverlap(placementObject);
             var angle = 90.0f;
             if (_currentMap != null)
             {
                 angle = _currentMap.RotationUnit;
             }
             placementObject.Transform.Rotate(placementObject.RotateAxis * angle);
-            UpdateMap(placementObject);
+            _currentMap?.UpdateMap(placementObject);
         }
 
         public void TurnObjectLeft(PlacementObject placementObject)
@@ -105,13 +116,14 @@ namespace PlacementSystem
 
             _currentMap = GetCurrentMap(placementObject.Transform.position);
             _currentMap?.ClearMap(placementObject);
+            UpdateMapOverlap(placementObject);
             var angle = -90.0f;
             if (_currentMap != null)
             {
                 angle = -_currentMap.RotationUnit;
             }
             placementObject.Transform.Rotate(placementObject.RotateAxis * angle);
-            UpdateMap(placementObject);
+            _currentMap?.UpdateMap(placementObject);
         }
 
         protected PlacementMap GetCurrentMap(Vector3 position)
@@ -123,12 +135,11 @@ namespace PlacementSystem
             return null;
         }
 
-        protected void UpdateMap(PlacementObject placementObject )
+        protected void UpdateMapOverlap(PlacementObject placementObject )
         {
             var map = GetCurrentMap(placementObject.Transform.position);
             if (map != null)
             {
-                map.UpdateMap(placementObject);
                 foreach (PlacementObject obj in _objects)
                 {
                     if (ReferenceEquals(obj, placementObject))

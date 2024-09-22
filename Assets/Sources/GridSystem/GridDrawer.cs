@@ -58,8 +58,8 @@ namespace GridSystem.Component
                     if (i % 2 == 0)
                     {
                         positions.Add(_gridViewer.CellToWorld(new Vector2Int(_gridViewer.MinCell.x, _gridViewer.MinCell.y + i)));
-                        positions.Add(_gridViewer.CellToWorld(new Vector2Int(_gridViewer.MaxCell.x, _gridViewer.MinCell.y + i)));
-                        positions.Add(_gridViewer.CellToWorld(new Vector2Int(_gridViewer.MaxCell.x, _gridViewer.MinCell.y + i + 1)));
+                        positions.Add(_gridViewer.CellToWorld(new Vector2Int(_gridViewer.MaxCell.x + 1, _gridViewer.MinCell.y + i)));
+                        positions.Add(_gridViewer.CellToWorld(new Vector2Int(_gridViewer.MaxCell.x + 1, _gridViewer.MinCell.y + i + 1)));
                     }
                     else
                     {
@@ -88,12 +88,12 @@ namespace GridSystem.Component
                     if (i % 2 == 0)
                     {
                         positions.Add(_gridViewer.CellToWorld(new Vector2Int(_gridViewer.MinCell.x + i, _gridViewer.MinCell.y)));
-                        positions.Add(_gridViewer.CellToWorld(new Vector2Int(_gridViewer.MinCell.x + i, _gridViewer.MaxCell.y)));
-                        positions.Add(_gridViewer.CellToWorld(new Vector2Int(_gridViewer.MinCell.x + i + 1, _gridViewer.MaxCell.y)));
+                        positions.Add(_gridViewer.CellToWorld(new Vector2Int(_gridViewer.MinCell.x + i, _gridViewer.MaxCell.y + 1)));
+                        positions.Add(_gridViewer.CellToWorld(new Vector2Int(_gridViewer.MinCell.x + i + 1, _gridViewer.MaxCell.y + 1)));
                     }
                     else
                     {
-                        positions.Add(_gridViewer.CellToWorld(new Vector2Int(_gridViewer.MinCell.x + i, _gridViewer.MaxCell.y)));
+                        positions.Add(_gridViewer.CellToWorld(new Vector2Int(_gridViewer.MinCell.x + i, _gridViewer.MaxCell.y + 1)));
                         positions.Add(_gridViewer.CellToWorld(new Vector2Int(_gridViewer.MinCell.x + i, _gridViewer.MinCell.y)));
                         positions.Add(_gridViewer.CellToWorld(new Vector2Int(_gridViewer.MinCell.x + i + 1, _gridViewer.MinCell.y)));
                     }

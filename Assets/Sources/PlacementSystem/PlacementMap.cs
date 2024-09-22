@@ -56,7 +56,7 @@ namespace PlacementSystem
                 _originalGrid.Clear();
             foreach(Vector2Int cell in _gridViewer.CellCoordinates)
             {
-                _originalGrid.Add(cell, _gridViewer.GetCellState(0, cell));
+                _originalGrid.Add(cell, _gridViewer.GetCellState(PLACEMENT_LAYER, cell));
             }
 
 #if UNITY_EDITOR
@@ -124,7 +124,7 @@ namespace PlacementSystem
                     return false;
                 if (settings == null)
                     return false;
-                if (settings.IsUnplacableState(_gridViewer.GetCellState(1, cell)))
+                if (settings.IsUnplacableState(_gridViewer.GetCellState(PLACEMENT_LAYER, cell)))
                     return false;
             }
             return true;
@@ -160,6 +160,8 @@ namespace PlacementSystem
 
         public Vector3 GetObjectArea(PlacementObject placement)
         {
+            if (placement == null)
+                return Vector3.zero;
             var count = ObjectCells.GetObjectCellCount(placement, _gridViewer);
             switch (_gridViewer.Axis)
             {
