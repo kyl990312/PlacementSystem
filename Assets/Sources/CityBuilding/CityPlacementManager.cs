@@ -40,10 +40,14 @@ public class CityPlacementManager : PlacementManager
 
         var areaObj = Instantiate(objectAreaPrefab);
         areaObj.transform.SetParent(instance.transform, false);
-        areaObj.transform.localScale = new Vector3(size.x, 0.0f, size.z);
+        areaObj.transform.localScale = new Vector3(size.x, 1.0f, size.z);
+        areaObj.transform.rotation = Quaternion.Euler(new Vector3(90.0f, 0.0f, 0.0f));
         areaObj.SetActive(true);
+        placementObject.SetArea(areaObj.transform);
 
         PutObject(placementObject, Vector3.zero);
+        _selectedObject = placementObject;
+        _currentMap = GetCurrentMap(placementObject.Transform.position);
     }
 
     public override void PickObject(PlacementObject placementObject)
@@ -57,7 +61,6 @@ public class CityPlacementManager : PlacementManager
         base.PutObject(placementObject, worldPosition);
         guiButtonGroup.SetPosition(placementObject, new Vector3(0.0f, 0.1f, 0.0f));
         SetVisiblePlacementButtons(true);
-
     }
 
     public void ReleaseObject()

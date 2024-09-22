@@ -158,6 +158,17 @@ namespace PlacementSystem
             return false;
         }
 
+        public Vector3 GetObjectArea(PlacementObject placement)
+        {
+            var count = ObjectCells.GetObjectCellCount(placement, _gridViewer);
+            switch (_gridViewer.Axis)
+            {
+                case GridAxis.XZ: return new Vector3(count.x * _gridViewer.CellSize.x, 1.0f, count.y * _gridViewer.CellSize.y);
+                case GridAxis.XY: return new Vector3(count.x * _gridViewer.CellSize.x,count.y * _gridViewer.CellSize.y,1.0f);
+            }
+            return Vector3.zero;
+        }
+
         // -----------------------------------------------------
         private class ObjectCells : IEnumerable<Vector2Int>
         {

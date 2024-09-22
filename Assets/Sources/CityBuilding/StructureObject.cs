@@ -5,6 +5,8 @@ public class StructureObject : PlacementObject
 {
     static int SHADER_PROP_HASH_COLOR = Shader.PropertyToID("_BaseColor");
     private Material _placableMaterial;
+    private Transform _areaObject;
+
     public override void Initialize(PlacementObjectData data)
     {
         base.Initialize(data);
@@ -21,6 +23,11 @@ public class StructureObject : PlacementObject
             renderer.materials = materials;
             _placableMaterial = materials[materials.Length - 1];
         }
+    }
+
+    public void SetArea(Transform areaObject)
+    {
+        _areaObject = areaObject;
     }
 
     public override void SetObjectState(Object_State state)
@@ -50,4 +57,14 @@ public class StructureObject : PlacementObject
         }
     }
 
+    public override void SetObjectArea(Vector3 size)
+    {
+        base.SetObjectArea(size);
+        if (_areaObject == null)
+            return;
+        size.x /= transform.lossyScale.x;
+        size.z /= transform.lossyScale.y;
+
+        _areaObject.localScale = new Vector3(size.x, size.z, 1.0f);
+    }
 }

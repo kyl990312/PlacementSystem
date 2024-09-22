@@ -74,10 +74,10 @@ public class SceneGame : SceneBase
             {
                 if (_objectPicker.PickedObject.TryGetComponent(out PlacementObject placementObject))
                 {
-                    if (placementManager.IsPlacable(placementObject, placementObject.Transform.position))
-                        placementManager.PutObject(placementObject, placementObject.Transform.position);
-                    else
+                    if (!placementManager.IsPlacable(placementObject, placementObject.Transform.position))
                         placementObject.Transform.position = _objectPicker.PickedPosition;
+                    placementManager.PutObject(placementObject, placementObject.Transform.position);
+
                 }
                 _objectPicker.Release();
             }

@@ -35,7 +35,7 @@ public class CityCameraController : MonoBehaviour
 
     public void MoveCamera(Vector3 direction)
     {
-        Vector3 position = _transform.position + direction * _sensitivity;
+        Vector3 position = _transform.position + direction * _sensitivity * Time.deltaTime * 10.0f;
         if(Vector3.Distance(position, _initialPosition) < _maxDistance)
         {
             _transform.position = position;

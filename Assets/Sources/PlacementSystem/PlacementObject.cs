@@ -1,3 +1,4 @@
+using GridSystem;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -52,6 +53,8 @@ namespace PlacementSystem
         }
 
         public virtual void SetObjectState(Object_State state) { }
+
+        public virtual void SetObjectArea(Vector3 size) { }
     }
 }
 

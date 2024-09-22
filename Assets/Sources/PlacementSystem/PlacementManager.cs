@@ -44,26 +44,25 @@ namespace PlacementSystem
             _selectedObject.Transform.position = _currentMap.GetObjectPosition(_selectedObject, worldPosition);
 
             _selectedObject.SetObjectState(_currentMap.IsPlacable(_selectedObject, _selectedObject.Transform.position) ? Object_State.Placable : Object_State.Unplacable);
+            _selectedObject.SetObjectArea(_currentMap.GetObjectArea(_selectedObject));
         }
 
         public virtual void PutObject(PlacementObject placementObject, Vector3 worldPosition)
         {
-            if (_currentMap == null || !_currentMap.IsContains(worldPosition))
-            {
-                _currentMap = GetCurrentMap(worldPosition);
-            }
-            if (_currentMap == null)
+            var map = GetCurrentMap(worldPosition);
+            if (map == null)
             {
                 worldPosition.y = placementObject.Transform.position.y;
                 placementObject.Transform.position = worldPosition;
                 return;
             }
-            placementObject.Transform.position = _currentMap.GetObjectPosition(_selectedObject, worldPosition);
+            placementObject.Transform.position = map.GetObjectPosition(placementObject, worldPosition);
             UpdateMap(placementObject);
 
             placementObject.SetObjectState(Object_State.None);
+            placementObject.SetObjectArea(map.GetObjectArea(placementObject));
 
-            if(!_objects.Exists(x=>ReferenceEquals(x, placementObject)))
+            if (!_objects.Exists(x=>ReferenceEquals(x, placementObject)))
                 _objects.Add(placementObject);
         }
 
