@@ -6,12 +6,17 @@ namespace GridSystem.Component
 {
     public class GridDrawer : MonoBehaviour
     {
-        public GridDrawerSettings settings;
+        static readonly int HASH_LINE_COLOR = Shader.PropertyToID("_LineColor");
+        static readonly int HASH_LINE_THICKNESS = Shader.PropertyToID("_LineThickness");
+        static readonly int HASH_LINE_CELL_COUNT = Shader.PropertyToID("_CellCount");
 
+        public GridDrawerSettings settings;
+        public GameObject gridPlanePrefab;
         private GridViwer _gridViewer;
-        private List<LineRenderer> _lines;
         private Vector3 _prevCenter;
         private bool _inited = false;
+        private Transform _gridPlane;
+        private Material _gridMaterial;
 
         private void Update()
         {
@@ -38,7 +43,7 @@ namespace GridSystem.Component
 
         public virtual void Initialize()
         {
-            SetLineRenderer();
+            SetRenderer();
             _inited = true;
         }
 
@@ -47,94 +52,36 @@ namespace GridSystem.Component
             if (_gridViewer == null)
                 return;
 
-            var positions = new List<Vector3>();
-
-            // draw horizontal
-            if (_lines.Count > 0)
+            if (_gridMaterial != null)
             {
-                var line = _lines[0];
-                for (int i = 0; i <= _gridViewer.CellCount.y; i++)
-                {
-                    if (i % 2 == 0)
-                    {
-                        positions.Add(_gridViewer.CellToWorld(new Vector2Int(_gridViewer.MinCell.x, _gridViewer.MinCell.y + i)));
-                        positions.Add(_gridViewer.CellToWorld(new Vector2Int(_gridViewer.MaxCell.x + 1, _gridViewer.MinCell.y + i)));
-                        positions.Add(_gridViewer.CellToWorld(new Vector2Int(_gridViewer.MaxCell.x + 1, _gridViewer.MinCell.y + i + 1)));
-                    }
-                    else
-                    {
-                        positions.Add(_gridViewer.CellToWorld(new Vector2Int(_gridViewer.MaxCell.x, _gridViewer.MinCell.y + i)));
-                        positions.Add(_gridViewer.CellToWorld(new Vector2Int(_gridViewer.MinCell.x, _gridViewer.MinCell.y + i)));
-                        positions.Add(_gridViewer.CellToWorld(new Vector2Int(_gridViewer.MinCell.x, _gridViewer.MinCell.y + i + 1)));
-                    }
-                }
-
-                for (int i = 0; i < positions.Count; i++)
-                {
-                    positions[i] -= new Vector3(_gridViewer.CellSize.x, 0.0f, _gridViewer.CellSize.y) * 0.5f;
-                }
-
-                line.positionCount = positions.Count-1;
-                line.SetPositions(positions.ToArray());
+                _gridMaterial.SetVector(HASH_LINE_CELL_COUNT, new Vector4(_gridViewer.CellCount.x, _gridViewer.CellCount.y, 0.0f, 0.0f));
             }
-            positions.Clear();
-
-            // draw vertical
-            if (_lines.Count > 0)
+            if(_gridPlane != null)
             {
-                var line = _lines[1];
-                for (int i = 0; i <= _gridViewer.CellCount.x; i++)
-                {
-                    if (i % 2 == 0)
-                    {
-                        positions.Add(_gridViewer.CellToWorld(new Vector2Int(_gridViewer.MinCell.x + i, _gridViewer.MinCell.y)));
-                        positions.Add(_gridViewer.CellToWorld(new Vector2Int(_gridViewer.MinCell.x + i, _gridViewer.MaxCell.y + 1)));
-                        positions.Add(_gridViewer.CellToWorld(new Vector2Int(_gridViewer.MinCell.x + i + 1, _gridViewer.MaxCell.y + 1)));
-                    }
-                    else
-                    {
-                        positions.Add(_gridViewer.CellToWorld(new Vector2Int(_gridViewer.MinCell.x + i, _gridViewer.MaxCell.y + 1)));
-                        positions.Add(_gridViewer.CellToWorld(new Vector2Int(_gridViewer.MinCell.x + i, _gridViewer.MinCell.y)));
-                        positions.Add(_gridViewer.CellToWorld(new Vector2Int(_gridViewer.MinCell.x + i + 1, _gridViewer.MinCell.y)));
-                    }
-                }
-
-                for (int i = 0; i < positions.Count; i++)
-                {
-                    positions[i] -= new Vector3(_gridViewer.CellSize.x, 0.0f, _gridViewer.CellSize.y) * 0.5f;
-                }
-
-                line.positionCount = positions.Count-1;
-                line.SetPositions(positions.ToArray());
+                _gridPlane.localScale = new Vector3(_gridViewer.CellCount.x * _gridViewer.CellSize.x, _gridViewer.CellCount.y * _gridViewer.CellSize.y, 1.0f);
+                _gridPlane.localPosition = new Vector3(_gridViewer.CellSize.x * 0.5f, 0.0f, _gridViewer.CellSize.y * 0.5f) * -1f;
             }
-
         }
 
-        private void SetLineRenderer()
+        private void SetRenderer()
         {
-            if(_lines == null)
-                _lines = new List<LineRenderer>();
+            var instance = Instantiate(gridPlanePrefab);
+            if (instance == null)
+                return;
+            _gridPlane = instance.transform;
+            _gridPlane.SetParent(transform, false);
+            _gridPlane.localRotation = Quaternion.Euler(90.0f,0.0f,0.0f);
+            var meshRenderer = instance.GetComponent<MeshRenderer>();
+            _gridMaterial = meshRenderer.material;
 
-            for(int i = 0; i<2; i++)
+            if(_gridMaterial != null)
             {
-                var line = new GameObject("line");
-                line.transform.SetParent(gameObject.transform, false);
-
-                LineRenderer lineRenderer = line.AddComponent<LineRenderer>();
-                if (lineRenderer == null)
-                    return;
-                if (settings != null)
+                if(settings != null)
                 {
-                    if (settings.lineMaterial != null)
-                        lineRenderer.material = settings.lineMaterial;
-                    lineRenderer.colorGradient = settings.lineColor;
-                    lineRenderer.startWidth = settings.lineThickness;
-                    lineRenderer.endWidth = settings.lineThickness;
+                    _gridMaterial.SetColor(HASH_LINE_COLOR, settings.lineColor);
+                    _gridMaterial.SetFloat(HASH_LINE_THICKNESS, settings.lineThickness);
                 }
-
-                _lines.Add(lineRenderer);
             }
-
         }
     }
 }

@@ -6,7 +6,6 @@ using UnityEngine;
 public class GridDrawerSettings : ScriptableObject
 {
     public List<int> exceptStates;
-    public Material lineMaterial;
-    public Gradient lineColor;
+    public Color lineColor;
     public float lineThickness;
 }

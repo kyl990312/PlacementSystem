@@ -3,7 +3,10 @@ guid: 918a98af1f94b624691524b058fad5a7
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - settings: {instanceID: 0}
+  - gridPlanePrefab: {fileID: 1968343770463294829, guid: b3bae4e84abc7554598621b63abc5554,
+      type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

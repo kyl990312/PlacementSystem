@@ -16,7 +16,7 @@ public class SceneSettings
     private Dictionary<SceneID, string> _scenes = new Dictionary<SceneID, string>()
     {
         {SceneID.Title, "SceneTitle" },
-        {SceneID.InGame, "SceneGame" }
+        {SceneID.InGame, "SceneDemo" }
     };
 
     public string GetSceneName(SceneID scene)
