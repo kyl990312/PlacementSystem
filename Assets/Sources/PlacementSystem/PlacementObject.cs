@@ -53,8 +53,6 @@ namespace PlacementSystem
         }
 
         public virtual void SetObjectState(Object_State state) { }
-
-        public virtual void SetObjectArea(Vector3 size) { }
     }
 }
 

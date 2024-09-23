@@ -241,7 +241,6 @@ namespace PlacementSystem
                 {
                     default:
                         var angle = placementObject.Transform.rotation.eulerAngles.y % 360;
-                        Debug.Log(angle);
                         if(90.0f <= angle && angle < 180.0f ||
                             angle >= 270.0f ||
                            -180.0f < angle && angle <= -90.0f ||
@@ -253,7 +252,6 @@ namespace PlacementSystem
                         }
                         break;
                 }
-                Debug.Log(objectSize);
                 return GetObjectCellCount(objectSize, gridViwer.CellSize);
             }
 

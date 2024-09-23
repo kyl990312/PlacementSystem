@@ -45,7 +45,6 @@ namespace PlacementSystem
             _selectedObject.Transform.position = _currentMap.GetObjectPosition(_selectedObject, worldPosition);
 
             _selectedObject.SetObjectState(_currentMap.IsPlacable(_selectedObject, _selectedObject.Transform.position) ? Object_State.Placable : Object_State.Unplacable);
-            _selectedObject.SetObjectArea(_currentMap.GetObjectArea(_selectedObject));
         }
 
         public virtual void PutObject(PlacementObject placementObject, Vector3 worldPosition)
@@ -61,7 +60,6 @@ namespace PlacementSystem
             map.UpdateMap(placementObject);
 
             placementObject.SetObjectState(Object_State.None);
-            placementObject.SetObjectArea(map.GetObjectArea(placementObject));
 
             if (!_objects.Exists(x=>ReferenceEquals(x, placementObject)))
                 _objects.Add(placementObject);

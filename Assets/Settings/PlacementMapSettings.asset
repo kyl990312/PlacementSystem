@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cea52cc6a48822543b8eca494cf008b4, type: 3}
   m_Name: PlacementMapSettings
   m_EditorClassIdentifier: 
-  layerCount: 0
+  layerCount: 1
   _unplacableStates: 02000000
   _gridData:
     Cells:
