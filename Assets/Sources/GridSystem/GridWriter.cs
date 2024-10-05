@@ -1,13 +1,18 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using GridSystem.Internal;
 
 namespace GridSystem
 {
-    public class GridViwer
+    public class GridWriter
     {
         private StateGrid _grid;
+        private int _targetLayer;
+
+        public GridWriter(StateGrid grid) 
+        {
+            _grid = grid;
+        }
 
         public Vector3 Center
         {
@@ -18,11 +23,11 @@ namespace GridSystem
                 return _grid.transform.position;
             }
         }
-        public Vector2 CellSize 
+        public Vector2 CellSize
         {
             get
             {
-                if(_grid == null)
+                if (_grid == null)
                     return Vector2.zero;
                 return _grid.CellSize;
             }
@@ -40,7 +45,7 @@ namespace GridSystem
         {
             get
             {
-                if(_grid == null)
+                if (_grid == null)
                     return Vector2Int.zero;
                 return _grid.MinCell;
             }
@@ -49,7 +54,7 @@ namespace GridSystem
         {
             get
             {
-                if(_grid == null)
+                if (_grid == null)
                     return Vector2Int.zero;
                 return _grid.MaxCell;
             }
@@ -58,7 +63,7 @@ namespace GridSystem
         {
             get
             {
-                if(_grid == null)
+                if (_grid == null)
                     return 0;
                 return _grid.LayerCount;
             }
@@ -67,7 +72,7 @@ namespace GridSystem
         {
             get
             {
-                if(_grid == null)
+                if (_grid == null)
                     return new Vector2Int[0];
                 return _grid.CellCoordinates;
             }
@@ -91,22 +96,79 @@ namespace GridSystem
             }
         }
 
-        public GridViwer(StateGrid grid)
-        {
-            _grid = grid;
-        }
-
-        public int GetCellState(int layer, Vector3 worldPosition)
+        public int AddLayer(List<CellData> cells)
         {
             if (_grid == null)
-                return 0;
+                return - 1;
+            _grid.AddLayer(cells);
+            return _grid.LayerCount - 1;
+        }
+
+        public int AddLayer(int state = 0)
+        {
+            if (_grid == null)
+                return - 1;
+
+            var cells = new List<CellData>(_grid.CellCount.x * _grid.CellCount.y);
+            foreach(var cell in _grid.CellCoordinates)
+            {
+                cells.Add(new CellData()
+                {
+                    Coordinate = cell,
+                    State = state,
+                });
+            }
+            
+            return AddLayer(cells);
+        }
+
+        public void RemoveLayer(int layer)
+        {
+            if (_grid == null)
+                return;
+            _grid.RemoveLayer(layer);
+        }
+
+        public void SetPositionWorld(Vector3 positionWorld)
+        {
+            if (_grid == null)
+                return;
+            _grid.transform.position = positionWorld;
+        }
+
+        public void SetRotationWorld(Quaternion rotationWorld)
+        {
+            if (_grid == null)
+                return;
+
+            _grid.transform.rotation = rotationWorld;
+        }
+        public void SetCellSize(Vector2 size)
+        {
+            if (_grid == null)
+                return;
+
+            _grid.CellSize = size;
+        }
+
+        public void SetCellState(int layer, Vector3 worldPosition, int state)
+        {
+            if (_grid == null)
+                return;
             var cellCoord = _grid.WorldToCell(worldPosition);
-            return _grid[layer, cellCoord];
+            _grid[layer, cellCoord] = state;
+        }
+
+        public void SetCellState(int layer, Vector2Int cellCoord, int state)
+        {
+            if (_grid == null)
+                return;
+            _grid[layer, cellCoord] = state;
         }
 
         public int GetCellState(int layer, Vector2Int cellCoord)
         {
-            if(_grid == null)
+            if (_grid == null)
                 return 0;
             return _grid[layer, cellCoord];
         }
@@ -120,11 +182,10 @@ namespace GridSystem
 
         public bool IsExistCell(Vector2Int cellCoord)
         {
-            if (_grid == null)
+            if(_grid == null)
                 return false;
             return _grid.IsExistCell(cellCoord);
         }
-
         public Vector3 CellToWorld(Vector2Int coord)
         {
             if (_grid == null)
@@ -138,6 +199,7 @@ namespace GridSystem
                 return Vector2Int.zero;
             return _grid.WorldToCell(worldPosition);
         }
+
     }
 }
 

@@ -1,5 +1,4 @@
 using GridSystem;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace PlacementSystem
@@ -7,8 +6,7 @@ namespace PlacementSystem
     [CreateAssetMenu(menuName = "PlacementSystem/Settings/Map", fileName ="PlacementMapSettings",order = 10)]
     public class PlacementMapSettings : ScriptableObject
     {
-        public int layerCount;
-        public List<int> _unplacableStates;
+        public bool _useObjectPlacer;
 
         [SerializeField] GridData _gridData;
         public GridDrawerSettings gridDrawerSettings;
@@ -17,13 +15,6 @@ namespace PlacementSystem
         {
             data = _gridData;
             return _gridData != null;
-        }
-
-        public bool IsUnplacableState(int state)
-        {
-            if (_unplacableStates == null)
-                return false;
-            return _unplacableStates.Contains(state);
         }
 
 #if UNITY_EDITOR

@@ -1,7 +1,5 @@
-using GridSystem;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace PlacementSystem
 {
@@ -12,15 +10,22 @@ namespace PlacementSystem
         Unplacable,
     }
 
+    [RequireComponent(typeof(BoxCollider))]
     public class PlacementObject : MonoBehaviour
     {
+        [SerializeField]
         private PlacementObjectData _data;
         private Transform _transform;
-        public Vector3 ObjectSize
+        private BoxCollider _boxCollider;
+        public virtual Vector3 ObjectSize
         {
             get
             {
-                return _data.size;
+                if(_boxCollider == null)
+                    _boxCollider = GetComponent<BoxCollider>();
+                if(_boxCollider == null )
+                    return Vector3.zero;
+                return _boxCollider.size;
             }
         }
         public int CellState
@@ -47,12 +52,28 @@ namespace PlacementSystem
                 return _transform;
             }
         }
-        public virtual void Initialize(PlacementObjectData data)
+
+        public UnityAction<PlacementObject> OnInactive;
+
+        public PlacementObjectData data
         {
-            _data = data;
+            set => _data = value;
+        }
+
+        private void OnDisable()
+        {
+            if(OnInactive != null)
+                OnInactive(this);
         }
 
         public virtual void SetObjectState(Object_State state) { }
+
+        public virtual bool IsPlacableState(int state)
+        {
+            if (_data.unplacableCellState == null)
+                return true;
+            return !_data.unplacableCellState.Contains(state);
+        }
     }
 }
 

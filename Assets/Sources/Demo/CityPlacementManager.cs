@@ -2,7 +2,7 @@ using PlacementSystem;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CityPlacementManager : PlacementManager
+public class CityPlacementManager : PlacementController
 {
     public GUIStructureInventory guiInventory;
     public GUICityPlacementButtonGroup guiButtonGroup;
@@ -24,6 +24,8 @@ public class CityPlacementManager : PlacementManager
         _objectAreaPool = new GameObjectPool(objectAreaPrefab);
 
         SetVisiblePlacementButtons(false);
+
+        Refresh();
     }
 
     private void OnPlace(GameObject gObj)
@@ -39,11 +41,11 @@ public class CityPlacementManager : PlacementManager
         {
             placementObject = instance.AddComponent<StructureObject>();
         }
-        placementObject.Initialize(new PlacementObjectData()
+        placementObject.data = new PlacementObjectData()
         {
             cellState = 2,
-            size = size
-        });
+        };
+        placementObject.Initialize();
 
         var areaObj = _objectAreaPool.Get();
         if (areaObj != null)
@@ -95,12 +97,16 @@ public class CityPlacementManager : PlacementManager
     {
         if (placementObject == null)
             return;
-        var map = GetCurrentMap(placementObject.Transform.position);
-        var size = map.GetObjectArea(placementObject);
+
         var areaObject = _objectAreas.Find(x => ReferenceEquals(x.Key, placementObject.gameObject));
         if (areaObject.Value == null)
             return;
-        areaObject.Value.localScale = new Vector3(size.x, size.z, 0.0f);
+        var map = GetCurrentMap(placementObject.Transform.position);
+        if (map != null)
+        {
+            var size = map.GetObjectArea(placementObject);
+            areaObject.Value.localScale = new Vector3(size.x, size.z, 0.0f);
+        }
         areaObject.Value.position = placementObject.Transform.position;
     }
 
@@ -124,9 +130,6 @@ public class CityPlacementManager : PlacementManager
         if (_selectedObject == null)
             return;
 
-        _currentMap = GetCurrentMap(_selectedObject.Transform.position);
-        _currentMap.ClearMap(_selectedObject);
-        Unplace(_selectedObject);
         int index = _objectAreas.FindIndex(x => ReferenceEquals(x.Key, _selectedObject.gameObject));
         if (index>=0)
         {
@@ -141,6 +144,5 @@ public class CityPlacementManager : PlacementManager
         DestroyImmediate(_selectedObject.gameObject);
         _selectedObject = null;
         SetVisiblePlacementButtons(_selectedObject != null);
-
     }
 }

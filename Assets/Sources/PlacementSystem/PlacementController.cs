@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace PlacementSystem
 {
-    public class PlacementManager : MonoBehaviour
+    public class PlacementController : MonoBehaviour
     {
         protected PlacementObject _selectedObject;
         protected PlacementMap _currentMap;
@@ -11,8 +11,31 @@ namespace PlacementSystem
         protected List<PlacementMap> _maps = new List<PlacementMap>();
         protected List<PlacementObject> _objects = new List<PlacementObject>();
 
+        private void Awake()
+        {
+            Refresh();
+        }
+
+        public void Refresh()
+        {
+            var maps = GetComponentsInChildren<PlacementMap>();
+            foreach (var map in maps)
+            {
+                AddMap(map);
+            }
+
+            for (int i = _objects.Count - 1; i >= 0; i--)
+            {
+                if(_objects[i] == null)
+                    _objects.RemoveAt(i);
+            }
+        }
+
         public void AddMap(PlacementMap map)
         {
+            if(_maps.Exists(x=>ReferenceEquals(x, map))) 
+                return;
+            map.Initialize();
             _maps.Add(map);
         }
 
@@ -21,6 +44,8 @@ namespace PlacementSystem
             if(placementObject == null) return;
             _selectedObject = placementObject;
             _currentMap = GetCurrentMap(placementObject.Transform.position);
+            if (_currentMap == null)
+                return;
 
             _currentMap.ClearMap(placementObject);
             UpdateMapOverlap(placementObject);
@@ -31,11 +56,19 @@ namespace PlacementSystem
         {
             if(_selectedObject == null)
                 return;
-            if (!_currentMap.IsContains(worldPosition))
+            if (_currentMap != null)
+            {
+                if (!_currentMap.IsContains(worldPosition))
+                {
+                    _currentMap = GetCurrentMap(worldPosition);
+                }
+            }
+            else
             {
                 _currentMap = GetCurrentMap(worldPosition);
             }
-            if(_currentMap == null)
+
+            if (_currentMap == null)
             {
                 worldPosition.y = _selectedObject.Transform.position.y;
                 _selectedObject.Transform.position = worldPosition;
@@ -60,27 +93,40 @@ namespace PlacementSystem
             map.UpdateMap(placementObject);
 
             placementObject.SetObjectState(Object_State.None);
-
-            if (!_objects.Exists(x=>ReferenceEquals(x, placementObject)))
-                _objects.Add(placementObject);
+            placementObject.OnInactive += Unplace;
         }
 
         public virtual void Unplace(PlacementObject placementObject)
         {
+            if (placementObject == null)
+                return;
+
+            GetCurrentMap(placementObject.Transform.position)?.ClearMap(placementObject);
+
             int index = _objects.FindIndex(x=>ReferenceEquals(x,placementObject));
             if(index >= 0)
             {
                 _objects.RemoveAt(index);
             }
+            placementObject.OnInactive += Unplace;
+        }
+
+        protected virtual void AddPlacementObject(PlacementObject placementObject)
+        {
+            if (!_objects.Exists(x => ReferenceEquals(x, placementObject)))
+                _objects.Add(placementObject);
         }
 
         public bool IsPlacable(PlacementObject placementObject, Vector3 worldPosition)
         {
             if(placementObject == null) 
                 return false;
-            if (!_currentMap.IsContains(worldPosition))
+            if(_currentMap != null)
             {
-                _currentMap = GetCurrentMap(worldPosition);
+                if (!_currentMap.IsContains(worldPosition))
+                {
+                    _currentMap = GetCurrentMap(worldPosition);
+                }
             }
             if (_currentMap == null)
             {

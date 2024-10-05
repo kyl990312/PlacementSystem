@@ -1,11 +1,9 @@
 fileFormatVersion: 2
-guid: 918a98af1f94b624691524b058fad5a7
+guid: 8f0d8c1916a9f174b9fb13d822879440
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences:
-  - settings: {instanceID: 0}
-  - gridPlanePrefab: {instanceID: 0}
+  defaultReferences: []
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

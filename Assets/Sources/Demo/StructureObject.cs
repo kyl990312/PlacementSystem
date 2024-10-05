@@ -6,10 +6,8 @@ public class StructureObject : PlacementObject
     static int SHADER_PROP_HASH_COLOR = Shader.PropertyToID("_BaseColor");
     private Material _placableMaterial;
 
-    public override void Initialize(PlacementObjectData data)
+    public void Initialize()
     {
-        base.Initialize(data);
-
         if(ResourcesLoader.Load("Materials/Placable", out Material placableMat))
         {
             var renderer = GetComponentInChildren<MeshRenderer>();

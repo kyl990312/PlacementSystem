@@ -8,8 +8,8 @@ namespace GridSystem
     public class GridGroup
     {
         private StateGrid _grid;
-        private GridController _controller;
-        private GridViwer _viewer;
+        private GridWriter _controller;
+        private GridReader _viewer;
 
         public void Initialize(GridData data, Transform parent, int layerCount = 1)
         {
@@ -17,7 +17,7 @@ namespace GridSystem
             _grid.Initialize(data, parent, layerCount);
         }
 
-        public bool GetGridController(out GridController controller)
+        public bool GetGridWriter(out GridWriter controller)
         {
             controller = null;
             if (_grid == null)
@@ -28,13 +28,13 @@ namespace GridSystem
 
             if(_controller == null)
             {
-                _controller = new GridController(_grid);
+                _controller = new GridWriter(_grid);
             }
             controller = _controller;
             return controller != null;
         }
 
-        public bool GetGridViewer(out GridViwer viewer)
+        public bool GetGridReader(out GridReader viewer)
         {
             viewer = null;
             if (_grid == null)
@@ -45,7 +45,7 @@ namespace GridSystem
 
             if (_viewer == null)
             {
-                _viewer = new GridViwer(_grid);
+                _viewer = new GridReader(_grid);
             }
             viewer = _viewer;
             return viewer != null;

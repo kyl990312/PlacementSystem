@@ -64,12 +64,17 @@ namespace GridSystem.Internal
         }
         public GridAxis Axis
         {
-            get => _grid.cellSwizzle switch
+            get
             {
-                GridLayout.CellSwizzle.XYZ => GridAxis.XY,
-                GridLayout.CellSwizzle.XZY => GridAxis.XZ,
-                _ => GridAxis.XZ
-            };
+                if (_grid == null)
+                    return GridAxis.XY;
+                return _grid.cellSwizzle switch
+                {
+                    GridLayout.CellSwizzle.XYZ => GridAxis.XY,
+                    GridLayout.CellSwizzle.XZY => GridAxis.XZ,
+                    _ => GridAxis.XZ
+                };
+            }
         }
         public int this[int index, Vector2Int coord]
         {
@@ -111,13 +116,13 @@ namespace GridSystem.Internal
 
         public void Initialize(GridData data, Transform parent, int layerCount = 1)
         {
-            var gridObj = new GameObject();
+            var gridObj = new GameObject("Grid");
             if(parent != null)
             {
                 gridObj.transform.SetParent(parent, false);
             }
             _transform = gridObj.transform;
-            _transform.position = data.CenterOffset;
+            _transform.localPosition = data.CenterOffset;
 
             _grid = gridObj.AddComponent<Grid>();
             _grid.cellSwizzle = data.Axis switch
@@ -126,7 +131,7 @@ namespace GridSystem.Internal
                 GridAxis.XZ => GridLayout.CellSwizzle.XZY,
                 _ => GridLayout.CellSwizzle.XZY
             };
-            _grid.cellSize = new Vector3(data.CellSize.x,1.0f,data.CellSize.y);
+            _grid.cellSize = new Vector3(data.CellSize.x, data.CellSize.y,1.0f);
             _cellStyle = data.CellStyle;
 
             _cellCount = data.CellCount;
@@ -178,6 +183,21 @@ namespace GridSystem.Internal
             }
         }
 
+        public void RemoveLayer(int layer)
+        {
+            if (layer < 0)
+                return;
+            if (_layerCount <= layer)
+                return;
+
+            foreach(var coord in _cellStates.Keys)
+            {
+                if (_cellStates[coord].Count <= layer)
+                    continue;
+                _cellStates[coord].RemoveAt(layer);
+            }
+        }
+
         public void Clear()
         {
             GameObject.DestroyImmediate(_grid.gameObject);
@@ -200,7 +220,7 @@ namespace GridSystem.Internal
 
         public bool IsContains(Vector3 worldPosition)
         {
-            return true;
+            return _cellStates.ContainsKey(WorldToCell(worldPosition));
         }
 
         public bool IsExistCell(Vector2Int cellCoord)

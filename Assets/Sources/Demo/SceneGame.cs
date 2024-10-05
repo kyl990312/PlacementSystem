@@ -12,7 +12,7 @@ public class SceneGame : SceneBase
 
     public override void Initialize()
     {
-        InitializeMaps();
+        placementManager.Initialize();
         InitializeInput();
     }
 
@@ -22,17 +22,6 @@ public class SceneGame : SceneBase
             GameManager.Instance.Quit();
     }
 
-    private void InitializeMaps()
-    {
-        placementManager.Initialize();
-        var maps = FindObjectsOfType<PlacementMap>();
-        foreach (PlacementMap map in maps)
-        {
-            map.Initialize();
-            placementManager.AddMap(map);
-        }
-    }
-    
     private void InitializeInput()
     {
         inputController.TouchDownAction += OnTouchDown;

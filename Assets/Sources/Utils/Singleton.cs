@@ -26,8 +26,12 @@ public class MonoSingleton<T> : MonoBehaviour
         {
             if(_instance == null)
             {
-                var gObj = new GameObject(typeof(T).ToString());
-                _instance = gObj.AddComponent<T>();
+                _instance = FindObjectOfType<T>();
+                if(_instance == null)
+                {
+                    var gObj = new GameObject(typeof(T).ToString());
+                    _instance = gObj.AddComponent<T>();
+                }
             }
 
             return _instance;
